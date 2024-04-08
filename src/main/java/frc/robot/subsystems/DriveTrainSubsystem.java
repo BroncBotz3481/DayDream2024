@@ -3,24 +3,42 @@
 // the WPILib BSD license file in the root directory of this project.
 
 package frc.robot.subsystems;
-
+import com.revrobotics.CANSparkMaxLowLevel.MotorType;
+import static edu.wpi.first.wpilibj2.command.CommandGroupBase.runOnce;
+import com.revrobotics.CANSparkMax;
+import com.revrobotics.CANSparkMax.IdleMode;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 
 public class DriveTrainSubsystem extends SubsystemBase {
 
-  CANSparkMax backLeftMotor = new CANSparkMax();
+  private final CANSparkMax leftMotor;
+  private final CANSparkMax rightMotor;
+
 
   /** Creates a new ExampleSubsystem. */
-  public DriveTrainSubsystem() {}
+  public DriveTrainSubsystem() {
+
+
+   leftMotor = new CANSparkMax(3, MotorType.kBrushless);
+   rightMotor = new CANSparkMax(2, MotorType.kBrushless);
+
+   leftMotor.setIdleMode(IdleMode.kCoast);
+   rightMotor.setIdleMode(IdleMode.kCoast);
+
+   rightMotor.setInverted(true);
+  }
 
   /**
    * Example command factory method.
    *
    * @return a command
    */
-  public Command exampleMethodCommand() {
+
+  
+
+  public static Command telopDriveCommand() {
     // Inline construction of command goes here.
     // Subsystem::RunOnce implicitly requires `this` subsystem.
     return runOnce(
@@ -45,3 +63,4 @@ public class DriveTrainSubsystem extends SubsystemBase {
   }
 
 }
+
