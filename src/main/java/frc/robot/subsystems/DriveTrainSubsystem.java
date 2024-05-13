@@ -4,34 +4,39 @@
 
 package frc.robot.subsystems;
 import com.revrobotics.CANSparkMax;
+
+import java.util.function.DoubleSupplier;
+
 import com.revrobotics.CANSparkBase.IdleMode;
-import com.revrobotics.CANSparkMaxLowLevel.MotorType;
-import edu.wpi.first.wpilibj2.command.CommandGroupBase.runOnce;
-// import com.revrobotics.CANSparkMax;
-// import com.revrobotics.CANSparkMax.IdleMode;
+
+import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants.driveTrainConstants;
 
 
 public class DriveTrainSubsystem extends SubsystemBase {
 
-  private final CANSparkMax leftMotor;
-  private final CANSparkMax rightMotor;
-
+   CANSparkMax leftMotor;
+   CANSparkMax rightMotor;
+   DifferentialDrive driveTrain;
+   double multi = driveTrainConstants.basedSpeed;
+   double slowed = driveTrainConstants.slowSpeed;
 
   /** Creates a new ExampleSubsystem. */
   public DriveTrainSubsystem() {
 
-    leftMotor = new CANSparkMax(3, com.revrobotics.CANSparkLowLevel.MotorType.kBrushless);
-    rightMotor = new CANSparkMax(2, com.revrobotics.CANSparkLowLevel.MotorType.kBrushless);
+    leftMotor = new CANSparkMax(driveTrainConstants.leftMotorID, com.revrobotics.CANSparkLowLevel.MotorType.kBrushless);
+    rightMotor = new CANSparkMax(driveTrainConstants.rightMotorID, com.revrobotics.CANSparkLowLevel.MotorType.kBrushless);
 
-  //  leftMotor = new CANSparkMax(3, MotorType.kBrushless);
-  //  rightMotor = new CANSparkMax(2, MotorType.kBrushless);
 
-   leftMotor.setIdleMode(IdleMode.kCoast);
-   rightMotor.setIdleMode(IdleMode.kCoast);
+   leftMotor.setIdleMode(IdleMode.kBrake);
+   rightMotor.setIdleMode(IdleMode.kBrake);
 
    rightMotor.setInverted(true);
+
+  driveTrain = new DifferentialDrive(leftMotor,rightMotor);
+
   }
 
   /**
@@ -42,15 +47,24 @@ public class DriveTrainSubsystem extends SubsystemBase {
 
   
 
-  public static Command telopDriveCommand() {
+  public Command DriveCommand(DoubleSupplier y, DoubleSupplier z) {
     // Inline construction of command goes here.
     // Subsystem::RunOnce implicitly requires `this` subsystem.
-    return runOnce(
+    return run(
         () -> {
-          /* one-time action goes here */
+          driveTrain.arcadeDrive(y.getAsDouble() * multi * slowed , z.getAsDouble() * multi *slowed);
         });
   }
+  
+  public void slowMode(){
+    slowed =  driveTrainConstants.slowSpeed;
+    System.out.println("SLowmode On");
+  } 
 
+  public void notSlowMode(){
+    slowed =  1;
+    System.out.println("SLowmode Off");
+  }
   /**
    * An example method querying a boolean state of the subsystem (for example, a digital sensor).
    *
